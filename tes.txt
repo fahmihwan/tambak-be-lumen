@@ -1,0 +1,27 @@
+// $report = DB::table('tambak')
+        //     ->select(
+        //         'tambak.*',
+        //         'kolam.id as id_kolam',
+        //         'kolam.nama as nama_kolam',
+        //         'kolam.luas as luas_kolam',
+        //         'siklus.id as siklus_id',
+        //         'siklus.tgl_tebar as tgl_tebar',
+        //         'siklus.perhitungan as perhitungan',
+        //         'siklus.spesies_udang as spesies_udang',
+        //         'siklus.umur_awal_udang as umur_awal_udang',
+        //         'siklus.target_sr as target_sr',
+        //         'siklus.lama_budidaya as lama_budidaya',
+        //         'siklus.note as siklus_note',
+        //     )
+        //     ->join('kolam', 'tambak.id', '=', 'kolam.tambak_id')
+        //     ->join('siklus', 'kolam.id', '=', 'siklus.kolam_id')
+        //     ->where('tambak.id', $request->tambak_id)
+        //     ->where('kolam.id', $request->kolam_id)
+        //     ->whereBetween('siklus.tgl_tebar', [$start, $end])
+        //     ->get();
+
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Success',
+        //     'data' => $report
+        // ], 200);

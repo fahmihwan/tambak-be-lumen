@@ -1,0 +1,49 @@
+image: ubuntu:latest
+
+
+stages:
+    - build
+    - deploy
+
+
+deploy_to_staging:
+    stage: build
+
+    before_script:
+        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y)'
+        - mkdir -p ~/.ssh
+        - eval $(ssh-agent -s)
+        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+        - apt-get -y install sudo
+        - which rsync || ( apt-get update -y && apt-get install rsync -y )
+
+    script:
+        - ssh-add <(echo "$PRIVATE_KEY")
+        - rsync -rvzD -e "ssh -o StrictHostKeyChecking=no" --exclude='storage' --exclude='.git/' --exclude='.gitlab-ci.yml' ./ sherin@103.176.79.157:/home/sherin/tambak/tambak-be/
+       
+    only:
+         variables:
+          - $CI_COMMIT_MESSAGE =~ /((staging_))/
+
+
+
+deploy_to_production:
+    stage: deploy
+
+    before_script:
+        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y)'
+        - mkdir -p ~/.ssh
+        - eval $(ssh-agent -s)
+        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+        - apt-get -y install sudo
+        - which rsync || ( apt-get update -y && apt-get install rsync -y )
+
+    script:
+        - ssh-add <(echo "$PRIVATE_KEY_PRODUCTION")
+        - rsync -rvzD -e "ssh -o StrictHostKeyChecking=no" --exclude='.git/' --exclude='.gitlab-ci.yml' ./ sherin@103.176.79.157:/home/sherin/tambak/tambak-be/
+        - ssh -o StrictHostKeyChecking=no sherin@103.176.79.157 "sudo composer install --working-dir=/home/sherin/tambak/tambak-be/"
+
+    only:
+         - tags  # please mention the 's' compared to Sergio Tomasello's solution
+    except:
+    - branches
